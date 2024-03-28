@@ -2,9 +2,9 @@ import psycopg2
 from flask import Flask, render_template, request
 # Connection parameters
 
-# les dates (début, fin) de réservation ou de location, la capacité des chambres,
-#la superficie, la chaîne hôtelière, la catégorie de l’hôtel,
-#le nombre total de chambres dans l’hôtel, le prix des chambres
+# les dates (début, fin) de réservation ou de location, la capacité des chambres,
+#la superficie, la chaîne hôtelière, la catégorie de l’hôtel,
+#le nombre total de chambres dans l’hôtel, le prix des chambres
 
 app = Flask(__name__)
 
@@ -54,11 +54,10 @@ def execute_query():
 
     return render_template('result.html', result=result)
 
-@app.route('/NextPage')
-def NextPage():
+@app.route('/employee-action')
+def employee_page():
+    return render_template('employee.html')
 
-    # Renvoi des résultats à la page
-    return render_template('result.html')
 
 
 if __name__ == '__main__':
