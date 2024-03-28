@@ -1,5 +1,9 @@
 import psycopg2
 from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
+from flask import render_template
+from flask import flash
+
 # Connection parameters
 
 # les dates (début, fin) de réservation ou de location, la capacité des chambres,
@@ -11,9 +15,9 @@ app = Flask(__name__)
 db_params = {
     'host': 'localhost',
     'port': '5432',
-    'database': 'postgres',
+    'database': 'csi 2532', 
     'user': 'postgres',
-    'password': 'jack'
+    'password': 'Ricola31'
 }
 
 # Establishing a connection
@@ -58,6 +62,17 @@ def execute_query():
 def employee_page():
     return render_template('employee.html')
 
+@app.route('/reservation', methods=['GET', 'POST'])
+def reservation_form():
+    return render_template('reservation_form.html')
+
+
+@app.route('/confirm_reservation', methods=['POST'])
+def confirm_reservation():
+    return render_template('reservation_confirmed.html')
+
+
+app.secret_key = '1234'
 
 
 if __name__ == '__main__':
