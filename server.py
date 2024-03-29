@@ -59,8 +59,8 @@ def execute_query():
     return render_template('result.html', result=result)
 
 @app.route('/employee-action')
-def employee_page():
-    return render_template('employee.html')
+def create_reservation():
+    return render_template('create_reservation.html')
 
 @app.route('/reservation', methods=['GET', 'POST'])
 def reservation_form():
@@ -70,6 +70,16 @@ def reservation_form():
 @app.route('/confirm_reservation', methods=['POST'])
 def confirm_reservation():
     return render_template('reservation_confirmed.html')
+
+@app.route('/employee_page-action', methods=['GET', 'POST'])
+def employee_page():
+    if request.method == 'GET':
+        # Handle GET request (render the employee page)
+        return render_template('employeePage.html')
+    elif request.method == 'POST':
+        # Handle POST request (perform actions based on form submission)
+        # Add your code here to handle the form submission
+        pass  # Placeholder for handling POST request
 
 
 app.secret_key = '1234'
