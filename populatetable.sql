@@ -38,13 +38,13 @@ VALUES
 -- Inserting data into Clients table
 INSERT INTO Clients (IDClient, NomComplet, Adresse, NumeroSecuriteSociale, DateEnregistrement)
 VALUES
-(1, 'John Doe', '123 Main St, City, Country', '123456789', '2024-03-27'),
-(2, 'Jane Smith', '456 Elm St, City, Country', '987654321', '2024-03-28');
+(11111111, 'John Doe', '123 Main St City Country', '123456789', '2024-03-27'),
+(22222222, 'Jane Smith', '456 Elm St City Country', '987654321', '2024-03-28');
 
 -- Inserting data into Employes table
 INSERT INTO Employes (IDEmploye, NomComplet, Adresse, NumeroSecuriteSociale, RolePoste)
 VALUES
-(1, 'Michael Johnson', '789 Oak St, City, Country', '456123789', 'Receptionist'),
+(1, 'Michael Johnson', '789 Oak St, City Country', '456123789', 'Receptionist'),
 (2, 'Emily Williams', '101 Pine St, City, Country', '789456123', 'Manager');
 
 -- Inserting data into Reservations table

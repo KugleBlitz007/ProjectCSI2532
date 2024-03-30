@@ -3,6 +3,8 @@ from flask import Flask, render_template, request
 from flask import Flask, render_template, request, redirect, url_for
 from flask import render_template
 from flask import flash
+import uuid
+from datetime import datetime
 
 # Connection parameters
 
@@ -15,12 +17,34 @@ app = Flask(__name__)
 db_params = {
     'host': 'localhost',
     'port': '5432',
-    'database': 'postgres', 
+    'database': 'csi 2532', 
     'user': 'postgres',
-    'password': 'piment'
+    'password': 'Ricola31'
 }
 
 # Establishing a connection
+connection = psycopg2.connect(**db_params)
+cursor = connection.cursor()
+
+# Add index to Chambres table if it doesn't already exist
+cursor.execute("CREATE INDEX IF NOT EXISTS idx_chambres_nom_chaine_hotel ON Chambres (NomChaineHotel);")
+cursor.execute("CREATE INDEX IF NOT EXISTS idx_chambres_prix ON Chambres (Prix);")
+connection.commit()
+
+# Add index to Clients table if it doesn't already exist
+cursor.execute("CREATE INDEX IF NOT EXISTS idx_clients_nom_complet ON Clients (NomComplet);")
+cursor.execute("CREATE INDEX IF NOT EXISTS idx_clients_numero_ss ON Clients (NumeroSecuriteSociale);")
+connection.commit()
+
+# Add index to Reservations table if it doesn't already exist
+cursor.execute("CREATE INDEX IF NOT EXISTS idx_reservations_id_client ON Reservations (IDClient);")
+cursor.execute("CREATE INDEX IF NOT EXISTS idx_reservations_id_chambre ON Reservations (IDChambre);")
+connection.commit()
+
+# Close cursor and connection
+cursor.close()
+connection.close()
+
 # Page d'accueil
 @app.route('/')
 def home():
@@ -69,7 +93,33 @@ def reservation_form():
 
 @app.route('/confirm_reservation', methods=['POST'])
 def confirm_reservation():
+    if request.method == 'POST':
+        # Récupérer les données du formulaire
+        NomComplet = request.form.get('NomComplet')
+        Adresse = request.form.get('Adresse')
+        NumeroSecuriteSociale = request.form.get('NumeroSecuriteSociale')
+
+        # Générer un ID client aléatoire
+        IDClient = int(uuid.uuid4().int % (10 ** 8))
+
+        # Récupérer la date d'enregistrement
+        DateEnregistrement = datetime.now()
+
+        # Connexion à la base de données
+        connection = psycopg2.connect(**db_params)
+        cursor = connection.cursor()
+
+        # Insérer les données du client dans la table "clients"
+        insert_query = "INSERT INTO clients (IDClient, NomComplet, Adresse, NumeroSecuriteSociale, DateEnregistrement) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(insert_query, (IDClient, NomComplet, Adresse, NumeroSecuriteSociale, DateEnregistrement))
+        connection.commit()
+
+        # Fermer la connexion à la base de données
+        cursor.close()
+        connection.close()
+
     return render_template('reservation_confirmed.html')
+
 
 @app.route('/employee_page-action', methods=['GET', 'POST'])
 def employee_page():
