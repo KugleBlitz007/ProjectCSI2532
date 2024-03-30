@@ -15,9 +15,9 @@ app = Flask(__name__)
 db_params = {
     'host': 'localhost',
     'port': '5432',
-    'database': 'csi 2532', 
+    'database': 'postgres', 
     'user': 'postgres',
-    'password': 'Ricola31'
+    'password': 'piment'
 }
 
 # Establishing a connection
@@ -80,6 +80,58 @@ def employee_page():
         # Handle POST request (perform actions based on form submission)
         # Add your code here to handle the form submission
         pass  # Placeholder for handling POST request
+
+
+def query_reservation_details(reservation_id):
+    # Connect to the database
+    connection = psycopg2.connect(**db_params)
+    cursor = connection.cursor()
+
+    # SQL query to retrieve reservation details
+    query = """
+    SELECT 
+        Reservations.IDReservation,
+        Reservations.IDClient,
+        Reservations.IDChambre,
+        Reservations.DateReservation,
+        Reservations.DateDebut,
+        Reservations.DateFin,
+        Clients.NomComplet AS ClientName,
+        Clients.Adresse AS ClientAddress
+    FROM 
+        Reservations
+    INNER JOIN 
+        Clients ON Reservations.IDClient = Clients.IDClient
+    WHERE 
+        Reservations.IDReservation = %s;
+    """
+
+    # Execute the query with the reservation ID parameter
+    cursor.execute(query, (reservation_id,))
+    
+    # Fetch the first row (assuming there's only one reservation per ID)
+    reservation_details = cursor.fetchone()
+
+    # Close cursor and connection
+    cursor.close()
+    connection.close()
+
+    return reservation_details
+
+    
+@app.route('/search_reservation', methods=['POST'])
+def search_reservation():
+    reservation_id = request.form.get('reservation_id')
+    
+    # Query the database to get reservation details based on ID
+    reservation_details = query_reservation_details(reservation_id)
+    
+    if reservation_details:
+        return render_template('reservation_details.html', reservation_details=reservation_details)
+    else:
+        return render_template('reservation_not_found.html')
+
+
 
 
 app.secret_key = '1234'
