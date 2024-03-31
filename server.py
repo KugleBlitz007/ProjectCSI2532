@@ -211,6 +211,39 @@ def delete_reservation():
         # Redirect to an error page or display an error message
         return "An error occurred: {}".format(str(e))
 
+@app.route('/toggle_client_arrival', methods=['POST'])
+def toggle_client_arrival():
+    reservation_id = request.form.get('reservation_id')
+    
+    try:
+        # Connect to the database
+        connection = psycopg2.connect(**db_params)
+        cursor = connection.cursor()
+
+        # Toggle the client_arrived status in the database
+        update_query = """
+        UPDATE Reservations
+        SET client_arrived = TRUE
+        WHERE IDReservation = %s;
+        """
+        cursor.execute(update_query, (reservation_id,))
+        connection.commit()
+        
+        # Close cursor and connection
+        cursor.close()
+        connection.close()
+        
+        # Redirect to the homepage or a success page
+        return redirect('/')
+    except Exception as e:
+        # Handle database errors or other exceptions
+        # Rollback changes
+        connection.rollback()
+        # Close cursor and connection
+        cursor.close()
+        connection.close()
+        # Redirect to an error page or display an error message
+        return "An error occurred: {}".format(str(e))
 
 
 
