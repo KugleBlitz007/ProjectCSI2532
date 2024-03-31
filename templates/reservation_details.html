@@ -17,5 +17,9 @@
     <p><strong>Client Address:</strong> {{ reservation_details[7] }}</p>
     <!-- Add more details as needed -->
 </body>
+<form action="/delete_reservation" method="post">
+    <input type="hidden" name="reservation_id" value="{{ reservation_details[0] }}">
+    <button type="submit">Delete Reservation</button>
+</form>
 </html>
 

@@ -17,9 +17,9 @@ app = Flask(__name__)
 db_params = {
     'host': 'localhost',
     'port': '5432',
-    'database': 'csi 2532', 
+    'database': 'postgres', 
     'user': 'postgres',
-    'password': 'Ricola31'
+    'password': 'piment'
 }
 
 # Establishing a connection
@@ -180,6 +180,36 @@ def search_reservation():
         return render_template('reservation_details.html', reservation_details=reservation_details)
     else:
         return render_template('reservation_not_found.html')
+
+@app.route('/delete_reservation', methods=['POST'])
+def delete_reservation():
+    reservation_id = request.form.get('reservation_id')
+    
+    # Connect to the database
+    connection = psycopg2.connect(**db_params)
+    cursor = connection.cursor()
+
+    try:
+        # SQL query to delete the reservation
+        delete_query = "DELETE FROM Reservations WHERE IDReservation = %s;"
+        cursor.execute(delete_query, (reservation_id,))
+        connection.commit()
+        
+        # Close cursor and connection
+        cursor.close()
+        connection.close()
+        
+        # Redirect to the homepage or a success page
+        return redirect('/')
+    except Exception as e:
+        # Handle database errors or other exceptions
+        # Rollback changes
+        connection.rollback()
+        # Close cursor and connection
+        cursor.close()
+        connection.close()
+        # Redirect to an error page or display an error message
+        return "An error occurred: {}".format(str(e))
 
 
 
