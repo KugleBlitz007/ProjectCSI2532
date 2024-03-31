@@ -1,0 +1,2 @@
+ALTER TABLE Reservations
+ADD COLUMN client_arrived BOOLEAN DEFAULT FALSE;
