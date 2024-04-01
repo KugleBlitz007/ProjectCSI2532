@@ -137,7 +137,7 @@ def query_reservation_details(reservation_id):
     connection = psycopg2.connect(**db_params)
     cursor = connection.cursor()
 
-    # SQL query to retrieve reservation details
+    # SQL query to retrieve reservation details including hotel information
     query = """
     SELECT 
         Reservations.IDReservation,
@@ -147,11 +147,18 @@ def query_reservation_details(reservation_id):
         Reservations.DateDebut,
         Reservations.DateFin,
         Clients.NomComplet AS ClientName,
-        Clients.Adresse AS ClientAddress
+        Clients.Adresse AS ClientAddress,
+        Reservations.client_arrived,
+        Hotels.NomHotel AS HotelName,
+        Hotels.AdresseHotel AS HotelAddress
     FROM 
         Reservations
     INNER JOIN 
         Clients ON Reservations.IDClient = Clients.IDClient
+    INNER JOIN
+        Chambres ON Reservations.IDChambre = Chambres.IDChambre
+    INNER JOIN
+        Hotels ON Chambres.IDHotel = Hotels.IDHotel
     WHERE 
         Reservations.IDReservation = %s;
     """
@@ -167,6 +174,7 @@ def query_reservation_details(reservation_id):
     connection.close()
 
     return reservation_details
+
 
     
 @app.route('/search_reservation', methods=['POST'])
@@ -212,6 +220,7 @@ def delete_reservation():
         return "An error occurred: {}".format(str(e))
 
 @app.route('/toggle_client_arrival', methods=['POST'])
+@app.route('/toggle_client_arrival', methods=['POST'])
 def toggle_client_arrival():
     reservation_id = request.form.get('reservation_id')
     
@@ -223,7 +232,7 @@ def toggle_client_arrival():
         # Toggle the client_arrived status in the database
         update_query = """
         UPDATE Reservations
-        SET client_arrived = TRUE
+        SET client_arrived = NOT client_arrived
         WHERE IDReservation = %s;
         """
         cursor.execute(update_query, (reservation_id,))
