@@ -17,9 +17,9 @@ app = Flask(__name__)
 db_params = {
     'host': 'localhost',
     'port': '5432',
-    'database': 'csi 2532', 
+    'database': 'postgres', 
     'user': 'postgres',
-    'password': 'Ricola31'
+    'password': 'piment'
 }
 
 # Establishing a connection
@@ -137,7 +137,7 @@ def query_reservation_details(reservation_id):
     connection = psycopg2.connect(**db_params)
     cursor = connection.cursor()
 
-    # SQL query to retrieve reservation details
+    # SQL query to retrieve reservation details including hotel information
     query = """
     SELECT 
         Reservations.IDReservation,
@@ -147,11 +147,18 @@ def query_reservation_details(reservation_id):
         Reservations.DateDebut,
         Reservations.DateFin,
         Clients.NomComplet AS ClientName,
-        Clients.Adresse AS ClientAddress
+        Clients.Adresse AS ClientAddress,
+        Reservations.client_arrived,
+        Hotels.NomHotel AS HotelName,
+        Hotels.AdresseHotel AS HotelAddress
     FROM 
         Reservations
     INNER JOIN 
         Clients ON Reservations.IDClient = Clients.IDClient
+    INNER JOIN
+        Chambres ON Reservations.IDChambre = Chambres.IDChambre
+    INNER JOIN
+        Hotels ON Chambres.IDHotel = Hotels.IDHotel
     WHERE 
         Reservations.IDReservation = %s;
     """
