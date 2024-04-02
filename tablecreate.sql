@@ -28,7 +28,8 @@ CREATE TABLE Chambres (
     Capacite VARCHAR(20),
     Vue VARCHAR(50),
     Extensible BOOLEAN,
-    ProblemesDommages TEXT
+    ProblemesDommages TEXT,
+	Disponible BOOLEAN
     --FOREIGN KEY (NomHotel) REFERENCES Hotels(NomHotel)
 );
 
