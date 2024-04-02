@@ -5,6 +5,7 @@ from flask import render_template
 from flask import flash
 import uuid
 from datetime import datetime
+from flask import session
 
 # Connection parameters
 
@@ -17,9 +18,9 @@ app = Flask(__name__)
 db_params = {
     'host': 'localhost',
     'port': '5432',
-    'database': 'csi 2532', 
+    'database': 'postgres',
     'user': 'postgres',
-    'password': 'Ricola31'
+    'password': 'jack'
 }
 
 # Establishing a connection
@@ -45,6 +46,8 @@ connection.commit()
 cursor.close()
 connection.close()
 
+
+
 # Page d'accueil
 @app.route('/')
 def home():
@@ -65,8 +68,11 @@ def execute_query():
         guests = int(request.form.get('guests'))  # Convert guests to int
         prix = float(request.form.get('prix'))  # Convert prix to float
 
+        session['checkInDate'] = checkInDate
+        session['checkOutDate'] = checkOutDate
+
     # Exécution de la requête SQL (remplacez la requête par la vôtre)
-        query = "SELECT NomHotel, Prix, Capacite FROM Chambres WHERE NomChaineHotel = %s and Prix < %s;"
+        query = "SELECT NomHotel, Prix, Capacite, IDChambre FROM Chambres WHERE NomChaineHotel = %s and Prix < %s;"
         cursor.execute(query, (hotelchaine, prix))
         result = cursor.fetchall()
 
@@ -83,6 +89,10 @@ def create_reservation():
 
 @app.route('/reservation', methods=['GET', 'POST'])
 def reservation_form():
+
+    id_chambre = request.args.get('id_chambre')
+    session['id_chambre'] = id_chambre
+
     return render_template('reservation_form.html')
 
 from datetime import datetime  # Assurez-vous que cette importation est présente en haut du fichier
@@ -94,11 +104,12 @@ def confirm_reservation():
         nom_complet = request.form.get('NomComplet')
         adresse = request.form.get('Adresse')
         numero_secu_sociale = request.form.get('NumeroSecuriteSociale')
-        check_in_date = request.form.get('check_in_date')
-        check_out_date = request.form.get('check_out_date')
+        checkInDate = session.get('checkInDate')
+        checkOutDate = session.get('checkOutDate')
         room_type = request.form.get('room-type')
         chaine_hoteliere = request.form.get('chaine_hoteliere')  # Change variable name
         guests = request.form.get('guests')
+        id_chambre = session.get('id_chambre')
 
         # Connexion à la base de données
         connection = psycopg2.connect(**db_params)
@@ -121,10 +132,10 @@ def confirm_reservation():
 
             # Insérer les données de réservation dans la table "Reservations"
             insert_reservation_query = """
-            INSERT INTO Reservations (IDReservation, IDClient, DateReservation, DateDebut, DateFin)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO Reservations (IDReservation, IDClient, IDchambre, DateReservation, DateDebut, DateFin)
+            VALUES (%s, %s, %s, %s, %s, %s)
             """
-            cursor.execute(insert_reservation_query, (id_reservation, id_client, datetime.now(), check_in_date, check_out_date))
+            cursor.execute(insert_reservation_query, (id_reservation, id_client, id_chambre, datetime.now(), checkInDate, checkOutDate))
             connection.commit()
 
             # Fermer la connexion à la base de données
@@ -160,7 +171,7 @@ def query_reservation_details(reservation_id):
 
     # SQL query to retrieve reservation details including hotel information
     query = """
-    SELECT 
+    SELECT
         Reservations.IDReservation,
         Reservations.IDClient,
         Reservations.IDChambre,
@@ -172,21 +183,21 @@ def query_reservation_details(reservation_id):
         Reservations.client_arrived,
         Hotels.NomHotel AS HotelName,
         Hotels.AdresseHotel AS HotelAddress
-    FROM 
+    FROM
         Reservations
-    INNER JOIN 
+    INNER JOIN
         Clients ON Reservations.IDClient = Clients.IDClient
     INNER JOIN
         Chambres ON Reservations.IDChambre = Chambres.IDChambre
     INNER JOIN
         Hotels ON Chambres.IDHotel = Hotels.IDHotel
-    WHERE 
+    WHERE
         Reservations.IDReservation = %s;
     """
 
     # Execute the query with the reservation ID parameter
     cursor.execute(query, (reservation_id,))
-    
+
     # Fetch the first row (assuming there's only one reservation per ID)
     reservation_details = cursor.fetchone()
 
@@ -200,10 +211,10 @@ def query_reservation_details(reservation_id):
 @app.route('/search_reservation', methods=['POST'])
 def search_reservation():
     reservation_id = request.form.get('reservation_id')
-    
+
     # Query the database to get reservation details based on ID
     reservation_details = query_reservation_details(reservation_id)
-    
+
     if reservation_details:
         return render_template('reservation_details.html', reservation_details=reservation_details)
     else:
@@ -212,7 +223,7 @@ def search_reservation():
 @app.route('/delete_reservation', methods=['POST'])
 def delete_reservation():
     reservation_id = request.form.get('reservation_id')
-    
+
     # Connect to the database
     connection = psycopg2.connect(**db_params)
     cursor = connection.cursor()
@@ -222,11 +233,11 @@ def delete_reservation():
         delete_query = "DELETE FROM Reservations WHERE IDReservation = %s;"
         cursor.execute(delete_query, (reservation_id,))
         connection.commit()
-        
+
         # Close cursor and connection
         cursor.close()
         connection.close()
-        
+
         # Redirect to the homepage or a success page
         return redirect('/')
     except Exception as e:
@@ -242,7 +253,7 @@ def delete_reservation():
 @app.route('/toggle_client_arrival', methods=['POST'])
 def toggle_client_arrival():
     reservation_id = request.form.get('reservation_id')
-    
+
     try:
         # Connect to the database
         connection = psycopg2.connect(**db_params)
@@ -256,11 +267,11 @@ def toggle_client_arrival():
         """
         cursor.execute(update_query, (reservation_id,))
         connection.commit()
-        
+
         # Close cursor and connection
         cursor.close()
         connection.close()
-        
+
         # Redirect to the homepage or a success page
         return redirect('/')
     except Exception as e:
