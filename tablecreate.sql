@@ -25,11 +25,12 @@ CREATE TABLE Chambres (
     NomChaineHotel VARCHAR(100),
 	  NomHotel VARCHAR(100),
     Prix DECIMAL(10,2),
-    Capacite VARCHAR(20),
+    Capacite INT,
     Vue VARCHAR(50),
     Extensible BOOLEAN,
     ProblemesDommages TEXT,
-	Disponible BOOLEAN
+    Disponible BOOLEAN,
+    Client_arrived BOOLEAN
     --FOREIGN KEY (NomHotel) REFERENCES Hotels(NomHotel)
 );
 
