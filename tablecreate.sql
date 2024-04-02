@@ -29,8 +29,8 @@ CREATE TABLE Chambres (
     Vue VARCHAR(50),
     Extensible BOOLEAN,
     ProblemesDommages TEXT,
-    Disponible BOOLEAN,
-    Client_arrived BOOLEAN
+    Disponible BOOLEAN
+    
     --FOREIGN KEY (NomHotel) REFERENCES Hotels(NomHotel)
 );
 
@@ -61,6 +61,7 @@ CREATE TABLE Reservations (
     DateReservation DATE,
     DateDebut DATE,
     DateFin DATE,
+	Client_arrived BOOLEAN,
     FOREIGN KEY (IDClient) REFERENCES Clients(IDClient),
     FOREIGN KEY (IDChambre) REFERENCES Chambres(IDChambre)
 );
