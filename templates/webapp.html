@@ -45,12 +45,12 @@
 
     <h1>Hotel Booking</h1>
 
-    <form id="bookingForm" onsubmit="submitForm(event)">
-        <label for="check-in-date">Check-in Date:</label>
-        <input type="date" id="check-in-date" name="check-in-date" required>
+    <form id="bookingForm" action="/confirm_reservation" method="post">
+        <label for="check_in_date">Check-in Date:</label>
+        <input type="date" id="check_in_date" name="check_in_date" required>
 
-        <label for="check-out-date">Check-out Date:</label>
-        <input type="date" id="check-out-date" name="check-out-date" required>
+        <label for="check_out_date">Check-out Date:</label>
+        <input type="date" id="check_out_date" name="check_out_date" required>
 
         <label for="room-type">Room Type:</label>
         <select id="room-type" name="room-type" required>
@@ -64,27 +64,6 @@
 
         <button type="submit">Book Now</button>
     </form>
-
-    <script>
-        function submitForm(event) {
-            event.preventDefault();
-
-            // Get form data
-            const checkInDate = document.getElementById('check-in-date').value;
-            const checkOutDate = document.getElementById('check-out-date').value;
-            const roomType = document.getElementById('room-type').value;
-            const guests = document.getElementById('guests').value;
-
-            // Display booking details (replace this with your logic)
-            const bookingDetails = `Booking Details:\n
-                Check-in Date: ${checkInDate}\n
-                Check-out Date: ${checkOutDate}\n
-                Room Type: ${roomType}\n
-                Number of Guests: ${guests}`;
-
-            alert(bookingDetails);
-        }
-    </script>
 
 </body>
 </html>

@@ -17,9 +17,9 @@ app = Flask(__name__)
 db_params = {
     'host': 'localhost',
     'port': '5432',
-    'database': 'postgres', 
+    'database': 'csi 2532', 
     'user': 'postgres',
-    'password': 'piment'
+    'password': 'Ricola31'
 }
 
 # Establishing a connection
@@ -51,7 +51,6 @@ def home():
     return render_template('index.html')
 
 # Exécute la requête SQL lorsqu'un formulaire est soumis
-
 @app.route('/execute_query', methods=['POST'])
 def execute_query():
     # Connexion à la base de données
@@ -59,19 +58,16 @@ def execute_query():
     cursor = connection.cursor()
 
     if request.method == 'POST':
-
         hotelchaine = request.form.get('chainehoteliere')
         roomtype = request.form.get('room-type')
         checkInDate = request.form.get('check-in-date')
         checkOutDate = request.form.get('check-out-date')
-        guests = request.form.get('guests')
-        prix = request.form.get('prix')
-
-        #chain_hoteliere = request.form['chainehoteliere']
+        guests = int(request.form.get('guests'))  # Convert guests to int
+        prix = float(request.form.get('prix'))  # Convert prix to float
 
     # Exécution de la requête SQL (remplacez la requête par la vôtre)
-        query = "SELECT NomHotel, Prix, Capacite FROM Chambres WHERE NomChaineHotel = '" + hotelchaine + "' and Prix < " + prix + " ;"
-        cursor.execute(query)
+        query = "SELECT NomHotel, Prix, Capacite FROM Chambres WHERE NomChaineHotel = %s and Prix < %s;"
+        cursor.execute(query, (hotelchaine, prix))
         result = cursor.fetchall()
 
     # Fermeture de la connexion à la base de données
@@ -79,7 +75,6 @@ def execute_query():
     connection.close()
 
     # Renvoi des résultats à la page
-
     return render_template('result.html', result=result)
 
 @app.route('/employee-action')
@@ -90,35 +85,62 @@ def create_reservation():
 def reservation_form():
     return render_template('reservation_form.html')
 
+from datetime import datetime  # Assurez-vous que cette importation est présente en haut du fichier
 
 @app.route('/confirm_reservation', methods=['POST'])
 def confirm_reservation():
     if request.method == 'POST':
         # Récupérer les données du formulaire
-        NomComplet = request.form.get('NomComplet')
-        Adresse = request.form.get('Adresse')
-        NumeroSecuriteSociale = request.form.get('NumeroSecuriteSociale')
-
-        # Générer un ID client aléatoire
-        IDClient = int(uuid.uuid4().int % (10 ** 8))
-
-        # Récupérer la date d'enregistrement
-        DateEnregistrement = datetime.now()
+        nom_complet = request.form.get('NomComplet')
+        adresse = request.form.get('Adresse')
+        numero_secu_sociale = request.form.get('NumeroSecuriteSociale')
+        check_in_date = request.form.get('check_in_date')
+        check_out_date = request.form.get('check_out_date')
+        room_type = request.form.get('room-type')
+        chaine_hoteliere = request.form.get('chaine_hoteliere')  # Change variable name
+        guests = request.form.get('guests')
 
         # Connexion à la base de données
         connection = psycopg2.connect(**db_params)
         cursor = connection.cursor()
 
-        # Insérer les données du client dans la table "clients"
-        insert_query = "INSERT INTO clients (IDClient, NomComplet, Adresse, NumeroSecuriteSociale, DateEnregistrement) VALUES (%s, %s, %s, %s, %s)"
-        cursor.execute(insert_query, (IDClient, NomComplet, Adresse, NumeroSecuriteSociale, DateEnregistrement))
-        connection.commit()
+        try:
+            # Générer un ID client aléatoire
+            id_client = int(uuid.uuid4().int % (10 ** 8))
 
-        # Fermer la connexion à la base de données
-        cursor.close()
-        connection.close()
+            # Insérer les données du client dans la table "Clients"
+            insert_client_query = """
+            INSERT INTO Clients (IDClient, NomComplet, Adresse, NumeroSecuriteSociale, DateEnregistrement)
+            VALUES (%s, %s, %s, %s, %s)
+            """
+            cursor.execute(insert_client_query, (id_client, nom_complet, adresse, numero_secu_sociale, datetime.now()))
+            connection.commit()
 
-    return render_template('reservation_confirmed.html')
+            # Générer un ID de réservation aléatoire
+            id_reservation = int(uuid.uuid4().int % (10 ** 8))
+
+            # Insérer les données de réservation dans la table "Reservations"
+            insert_reservation_query = """
+            INSERT INTO Reservations (IDReservation, IDClient, DateReservation, DateDebut, DateFin)
+            VALUES (%s, %s, %s, %s, %s)
+            """
+            cursor.execute(insert_reservation_query, (id_reservation, id_client, datetime.now(), check_in_date, check_out_date))
+            connection.commit()
+
+            # Fermer la connexion à la base de données
+            cursor.close()
+            connection.close()
+
+            # Afficher le numéro de réservation
+            return render_template('reservation_confirmed.html', reservation_id=id_reservation)
+
+        except Exception as e:
+            # En cas d'erreur, effectuer un rollback et renvoyer un message d'erreur
+            connection.rollback()
+            cursor.close()
+            connection.close()
+            return "An error occurred: {}".format(str(e))
+
 
 
 @app.route('/employee_page-action', methods=['GET', 'POST'])
@@ -130,7 +152,6 @@ def employee_page():
         # Handle POST request (perform actions based on form submission)
         # Add your code here to handle the form submission
         pass  # Placeholder for handling POST request
-
 
 def query_reservation_details(reservation_id):
     # Connect to the database
@@ -175,7 +196,7 @@ def query_reservation_details(reservation_id):
 
     return reservation_details
 
-    
+
 @app.route('/search_reservation', methods=['POST'])
 def search_reservation():
     reservation_id = request.form.get('reservation_id')
