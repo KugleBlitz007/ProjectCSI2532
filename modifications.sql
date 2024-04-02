@@ -1,2 +1,6 @@
 ALTER TABLE Reservations
 ADD COLUMN client_arrived BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE chambres
+ADD COLUMN Disponible BOOLEAN DEFAULT TRUE;
+
