@@ -11,16 +11,13 @@
     <ul>
         {% for room in result %}
             <li>
-                <strong>Nom hôtel:</strong> {{ room[0] }}, 
-                <strong>Prix:</strong> {{ room[1] }}, 
+                <strong>Nom hôtel:</strong> {{ room[0] }},
+                <strong>Prix:</strong> {{ room[1] }},
                 <strong>Capacité:</strong> {{ room[2] }}
                 
-                <form action="/reservation" method="post">
-                    <input type="hidden" name="hotel_name" value="{{ room[0] }}">
-                    <input type="hidden" name="prix" value="{{ room[1] }}">
-                    <input type="hidden" name="capacite" value="{{ room[2] }}">
-                    <button type="submit">Réserver</button>
-                </form>
+
+                <a href="/reservation?id_chambre={{ room[3] }}"><button>Réserver</button></a>
+
             </li>
         {% endfor %}
     </ul>
