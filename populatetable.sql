@@ -21,18 +21,18 @@ VALUES
 (10, 'Westin', 'Westin Hotel 2', 'Westin Hotel 2 Address', 'westin2@example.com', '123-456-7890', 4);
 
 -- Inserting data into Chambres table
-INSERT INTO Chambres (IDChambre, IDHotel,NomChaineHotel, NomHotel, Prix, Capacite, Vue, Extensible, ProblemesDommages, Disponible, Client_arrived)
+INSERT INTO Chambres (IDChambre, IDHotel,NomChaineHotel, NomHotel, Prix, Capacite, Vue, Extensible, ProblemesDommages, Disponible)
 VALUES
-(1, 1,'Marriott','Marriott Hotel 1', 150.00, 5, 'City View', TRUE, NULL, TRUE, FALSE),
-(2, 1,'Marriott','Marriott Hotel 2', 200.00, 2, 'Ocean View', FALSE, 'Minor damage to door', TRUE, FALSE),
-(3, 2,'Super8','Super8 Hotel 1', 80.00, 4, 'Street View', TRUE, NULL, TRUE, FALSE),
-(4, 2,'Super8','Super8 Hotel 2', 120.00, 5, 'Pool View', FALSE, NULL, TRUE, FALSE),
-(5, 3,'Delta','Delta Hotel 1', 100.00, 2, 'City View', TRUE, NULL, TRUE, FALSE),
-(6, 3,'Delta','Delta Hotel 2', 150.00, 4, 'Mountain View', FALSE, NULL, TRUE, FALSE),
-(7, 4,'Sheraton','Sheraton Hotel 1', 200.00, 2, 'City View', TRUE, NULL, TRUE, FALSE),
-(8, 4,'Sheraton','Sheraton Hotel 2', 250.00, 4, 'Beach View', FALSE, 'None', TRUE, FALSE),
-(9, 5,'Westin','Westin Hotel 1', 180.00, 5, 'City View', TRUE, 'Minor scratches on furniture', TRUE, FALSE),
-(10, 5,'Westin','Westin Hotel 2', 220.00, 5, 'Lake View', FALSE, NULL, TRUE, FALSE);
+(1, 1,'Marriott','Marriott Hotel 1', 150.00, 5, 'City View', TRUE, NULL, TRUE),
+(2, 1,'Marriott','Marriott Hotel 2', 200.00, 2, 'Ocean View', FALSE, 'Minor damage to door', TRUE),
+(3, 2,'Super8','Super8 Hotel 1', 80.00, 4, 'Street View', TRUE, NULL, TRUE),
+(4, 2,'Super8','Super8 Hotel 2', 120.00, 5, 'Pool View', FALSE, NULL, TRUE),
+(5, 3,'Delta','Delta Hotel 1', 100.00, 2, 'City View', TRUE, NULL, TRUE),
+(6, 3,'Delta','Delta Hotel 2', 150.00, 4, 'Mountain View', FALSE, NULL, TRUE),
+(7, 4,'Sheraton','Sheraton Hotel 1', 200.00, 2, 'City View', TRUE, NULL, TRUE),
+(8, 4,'Sheraton','Sheraton Hotel 2', 250.00, 4, 'Beach View', FALSE, 'None', TRUE),
+(9, 5,'Westin','Westin Hotel 1', 180.00, 5, 'City View', TRUE, 'Minor scratches on furniture', TRUE),
+(10, 5,'Westin','Westin Hotel 2', 220.00, 5, 'Lake View', FALSE, NULL, TRUE);
 
 -- Inserting data into Clients table
 INSERT INTO Clients (IDClient, NomComplet, Adresse, NumeroSecuriteSociale, DateEnregistrement)
@@ -47,10 +47,10 @@ VALUES
 (2, 'Emily Williams', '101 Pine St, City, Country', '789456123', 'Manager');
 
 -- Inserting data into Reservations table
-INSERT INTO Reservations (IDReservation, IDClient, IDChambre, DateReservation, DateDebut, DateFin)
+INSERT INTO Reservations (IDReservation, IDClient, IDChambre, DateReservation, DateDebut, DateFin, client_arrived)
 VALUES
-(1, 11111111, 1, '2024-04-01', '2024-04-10', '2024-04-15'),
-(2, 11111111, 3, '2024-05-15', '2024-05-20', '2024-05-25');
+(1, 11111111, 1, '2024-04-01', '2024-04-10', '2024-04-15',FALSE),
+(2, 11111111, 3, '2024-05-15', '2024-05-20', '2024-05-25', FALSE);
 
 -- Inserting data into Locations table
 INSERT INTO Locations (IDLocation, IDReservation, IDEmploye, DateLocation)
