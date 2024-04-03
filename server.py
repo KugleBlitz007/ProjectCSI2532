@@ -20,7 +20,7 @@ db_params = {
     'port': '5432',
     'database': 'postgres',
     'user': 'postgres',
-    'password': 'jack'
+    'password': '0000'
 }
 
 # Establishing a connection
