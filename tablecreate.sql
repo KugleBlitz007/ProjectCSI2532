@@ -77,6 +77,42 @@ CREATE TABLE Locations (
 );
 
 
+-- Votre code SQL existant ici
+
+-- Trigger pour mettre à jour l'état 'Disponible' à 'False' lorsqu'une nouvelle réservation est créée
+CREATE OR REPLACE FUNCTION update_chambre_disponible_on_insert()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE Chambres
+    SET Disponible = FALSE
+    WHERE IDChambre = NEW.IDChambre;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_chambre_disponible_after_insert
+AFTER INSERT ON Reservations
+FOR EACH ROW
+EXECUTE FUNCTION update_chambre_disponible_on_insert();
+
+-- Trigger pour mettre à jour l'état 'Disponible' à 'True' lorsqu'une réservation est supprimée
+CREATE OR REPLACE FUNCTION update_chambre_disponible_on_delete()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE Chambres
+    SET Disponible = TRUE
+    WHERE IDChambre = OLD.IDChambre;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_chambre_disponible_after_delete
+AFTER DELETE ON Reservations
+FOR EACH ROW
+EXECUTE FUNCTION update_chambre_disponible_on_delete();
+
+
+
 
 -- Table delete
 -- Drop all tables in the schema

@@ -18,9 +18,9 @@ app = Flask(__name__)
 db_params = {
     'host': 'localhost',
     'port': '5432',
-    'database': 'postgres',
+    'database': 'csi 2532',
     'user': 'postgres',
-    'password': '0000'
+    'password': 'Ricola31'
 }
 
 # Establishing a connection
